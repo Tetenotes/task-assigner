@@ -375,4 +375,4 @@ def reassign_task():
     return redirect(url_for('portal'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
