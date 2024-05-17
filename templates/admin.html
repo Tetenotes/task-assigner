@@ -1,1 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="mechanic-profile">
+        <h2>Mechanic Profile Creation</h2>
+        <form id="mechanic-form">
+            <label for="first-name">First Name:</label>
+            <input type="text" id="first-name" placeholder="First Name" required>
+            <label for="last-name">Last Name:</label>
+            <input type="text" id="last-name" placeholder="Last Name" required>
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" placeholder="Phone Number" required>
+            <label for="mechanic-id">Mechanic ID:</label>
+            <input type="text" id="mechanic-id" placeholder="Mechanic ID" required>
+            <label for="photo">Photo:</label>
+            <input type="file" id="photo" accept="image/*" required>
+            <label for="comments">Comments:</label>
+            <textarea id="comments" placeholder="Comments"></textarea>
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Sulthan Trans Email ID" required>
+            <label for="location">Office Location:</label>
+            <input type="text" id="location" placeholder="Office Location" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div class="task-list">
+        <h2>Task List</h2>
+        <form id="task-form">
+            <label for="mechanic-id-task">Mechanic ID:</label>
+            <input type="text" id="mechanic-id-task" placeholder="Mechanic ID" required>
+            <label for="task">Task:</label>
+            <input type="text" id="task" placeholder="Task" required>
+            <label for="duration">Duration (in minutes):</label>
+            <input type="number" id="duration" placeholder="Duration (in minutes)" required>
+            <button type="submit">Assign Task</button>
+        </form>
+    </div>
+
+    <div class="mechanic-profiles">
+        <h2>Mechanic Profiles</h2>
+        <ul>
+            {% for mechanic in mechanics %}
+                <li>{{ mechanic.first_name }} {{ mechanic.last_name }} - {{ mechanic.email }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="assigned-tasks">
+        <h2>Assigned Tasks</h2>
+        <ul>
+            {% for task in tasks %}
+                <li>{{ task.task_description }} assigned to {{ task.mechanic_id }} - {{ task.status }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="notifications">
+        <h2>Notifications</h2>
+        <div id="notifications-list">
+            <!-- Notifications will be displayed here -->
+        </div>
+    </div>
+    <a href="/portal">Go to portal</a>
+</body>
+</html>
 
