@@ -1,0 +1,42 @@
+[
+    {
+        "email": "admin1@taskassigner.com",
+        "password": "admin1password"
+    },
+    {
+        "email": "admin2@taskassigner.com",
+        "password": "admin2password"
+    },
+    {
+        "email": "admin3@taskassigner.com",
+        "password": "admin3password"
+    },
+    {
+        "email": "admin4@taskassigner.com",
+        "password": "admin4password"
+    },
+    {
+        "email": "admin5@taskassigner.com",
+        "password": "admin5password"
+    },
+    {
+        "email": "admin6@taskassigner.com",
+        "password": "admin6password"
+    },
+    {
+        "email": "admin7@taskassigner.com",
+        "password": "admin7password"
+    },
+    {
+        "email": "admin8@taskassigner.com",
+        "password": "admin8password"
+    },
+    {
+        "email": "admin9@taskassigner.com",
+        "password": "admin9password"
+    },
+    {
+        "email": "admin10@taskassigner.com",
+        "password": "admin10password"
+    }
+]
