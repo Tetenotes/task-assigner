@@ -8,7 +8,7 @@ import uuid
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
+from werkzeug.utils import secure_filename
 app = Flask(__name__)
 
 # Ensure the directory exists
@@ -20,6 +20,8 @@ os.makedirs(os.path.dirname(db_path), exist_ok=True)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'sxndbxnnxnbsnmmwm'
+app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static/uploads')
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
 
@@ -105,7 +107,7 @@ def register():
         try:
             db.session.add(new_user)
             db.session.commit()
-            flash('Registration successful! Please log in.', 'success')
+            flash('Profile created successfully!', 'success')
             return redirect(url_for('login_page'))
         except IntegrityError:
             db.session.rollback()
@@ -153,7 +155,7 @@ def admin():
     mechanics = Mechanic.query.all()
     tasks = Task.query.all()
     notifications = Notification.query.order_by(Notification.timestamp.desc()).limit(10).all()
-    return render_template('admin.html', mechanics=mechanics, tasks=tasks, notifications=notifications)
+    return render_template('admin.html', mechanics=mechanics, tasks=tasks, notifications=notifications, os=os)
 
 # Calculate elapsed time for in-progress tasks
 def calculate_elapsed_time(task):
@@ -193,18 +195,25 @@ def add_mechanic():
     if 'email' not in session:
         flash('You need to be logged in to perform this action.', 'danger')
         return redirect(url_for('login_page'))
-        
+
     first_name = request.form['firstName']
     last_name = request.form['lastName']
     phone = request.form['phoneNumber']
     mechanic_id = request.form['mechanicId']
-    photo = request.form['photo']
+    photo = request.files.get('photo')  
     comments = request.form['comments']
     email = request.form['email']
     location = request.form['location']
-    
+
+    if photo:
+        photo_filename = secure_filename(photo.filename)
+        photo.save(os.path.join(app.config['UPLOAD_FOLDER'], photo_filename))
+        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], photo_filename)
+    else:
+        photo_path = None  # Handle case when photo is not uploaded
+
     new_mechanic = Mechanic(first_name=first_name, last_name=last_name, phone=phone, mechanic_id=mechanic_id, 
-                            photo=photo, comments=comments, email=email, location=location)
+                            photo=photo_path, comments=comments, email=email, location=location)
     try:
         db.session.add(new_mechanic)
         db.session.commit()
@@ -212,8 +221,26 @@ def add_mechanic():
     except IntegrityError:
         db.session.rollback()
         flash('Error: Mechanic ID or Email already exists.', 'danger')
-    
+
     return redirect(url_for('portal'))
+@app.route('/delete_mechanic', methods=['POST'])
+def delete_mechanic():
+    if 'email' not in session:
+        flash('You need to be logged in to delete mechanics.', 'danger')
+        return redirect(url_for('login_page'))
+
+    mechanic_id = request.form['mechanicId']
+    mechanic = Mechanic.query.filter_by(mechanic_id=mechanic_id).first()
+
+    if mechanic:
+        db.session.delete(mechanic)
+        db.session.commit()
+        flash('Mechanic deleted successfully!', 'success')
+    else:
+        flash(f'Error: Mechanic with ID {mechanic_id} not found.', 'danger')
+
+    return redirect(url_for('admin'))
+
 
 @app.route('/assign_task', methods=['POST'])
 def assign_task():
@@ -374,6 +401,5 @@ def reassign_task():
 
     return redirect(url_for('portal'))
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(debug=True, port=8080)
