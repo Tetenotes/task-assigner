@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
+from pytz import utc
 from sqlalchemy.exc import IntegrityError
 import json
 from datetime import datetime, timedelta
@@ -10,12 +11,19 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer
+from sqlalchemy.types import DateTime
 app = Flask(__name__)
 
 # Ensure the directory exists
 basedir = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.join(basedir, 'database', 'app.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
+#  Define a custom filter to get the basename of a file path
+def basename(filepath):
+    return os.path.basename(filepath)
+
+# Register the custom filter with Jinja2
+app.jinja_env.filters['basename'] = basename
 
 # Configuring the SQLite database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
@@ -51,8 +59,8 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mechanic_id = db.Column(db.String(50), nullable=False)
     task_description = db.Column(db.Text, nullable=False)
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
+    start_time = db.Column(DateTime(timezone=True), nullable=False)
+    end_time = db.Column(DateTime(timezone=True), nullable=False)
     status = db.Column(db.String(20), default='in progress')
     paused_time = db.Column(db.DateTime, nullable=True)  # Track paused time
     total_elapsed_time = db.Column(db.Interval, nullable=True)  # Track total elapsed time
@@ -148,16 +156,6 @@ def logout():
     session.clear()
     return redirect(url_for('login_page'))
 
-@app.route('/admin')
-def admin():
-    if 'email' not in session:
-        flash('You need to be logged in to view this page.', 'danger')
-        return redirect(url_for('login_page'))
-        
-    mechanics = Mechanic.query.all()
-    tasks = Task.query.all()
-    notifications = Notification.query.order_by(Notification.timestamp.desc()).limit(10).all()
-    return render_template('admin.html', mechanics=mechanics, tasks=tasks, notifications=notifications, os=os)
 
 # Calculate elapsed time for in-progress tasks
 def calculate_elapsed_time(task):
@@ -190,8 +188,25 @@ def portal():
 
     return render_template('portal.html', mechanics=mechanics, tasks=tasks, notifications=notifications, total_tasks=total_tasks,
                            total_completed_tasks=total_completed_tasks, total_in_progress_tasks=total_in_progress_tasks,
-                           average_task_duration=average_task_duration, datetime=datetime)
-
+                           average_task_duration=average_task_duration, os=os, datetime=datetime)
+@app.route('/admin')
+def admin():
+    if 'email' not in session:
+        flash('You need to be logged in to view this page.', 'danger')
+        return redirect(url_for('login_page'))
+        
+    mechanics = Mechanic.query.all()
+    tasks = Task.query.all()
+    notifications = Notification.query.order_by(Notification.timestamp.desc()).limit(10).all()
+      # Calculate statistics, average duration, etc.
+    total_tasks = len(tasks)
+    total_completed_tasks = sum(1 for task in tasks if task.status == 'completed')
+    total_in_progress_tasks = sum(1 for task in tasks if task.status == 'in progress')
+    total_task_duration = sum((task.end_time - task.start_time).total_seconds() / 60 for task in tasks if task.end_time and task.start_time)
+    average_task_duration = total_task_duration / total_tasks if total_tasks > 0 else 0
+    return render_template('admin.html', mechanics=mechanics, tasks=tasks, notifications=notifications, total_tasks=total_tasks,
+                           total_completed_tasks=total_completed_tasks, total_in_progress_tasks=total_in_progress_tasks,
+                           average_task_duration=average_task_duration, os=os, datetime=datetime)
 @app.route('/add_mechanic', methods=['POST'])
 def add_mechanic():
     if 'email' not in session:
@@ -260,8 +275,8 @@ def assign_task():
     end_time_str = request.form.get('to')
 
     # Convert datetime strings to datetime objects
-    start_time = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M')
-    end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M')
+    start_time = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M').replace(tzinfo=utc)
+    end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M').replace(tzinfo=utc)
 
     # Check if task_description is None
     if not task_description:
@@ -442,7 +457,5 @@ def reset_password(token):
             flash('An error occurred. Please try again.', 'danger')
             return redirect(url_for('reset_password', token=token))
     return render_template('reset_password.html', token=token)
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    app.run(debug=True)
