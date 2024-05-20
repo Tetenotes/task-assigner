@@ -457,5 +457,7 @@ def reset_password(token):
             flash('An error occurred. Please try again.', 'danger')
             return redirect(url_for('reset_password', token=token))
     return render_template('reset_password.html', token=token)
-if __name__ == '__main__':
-    app.run(debug=True)
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
