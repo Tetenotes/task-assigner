@@ -9,6 +9,7 @@
 <body>
     <div class="login-container">
         <img src="{{ url_for('static', filename='images/trans_image.jpg') }}" alt="Background Image">
+        <h1>Welcome to Task Assigner</h1>
         <h2>Login</h2>
         <form id="login-form" method="POST" action="/login">
             <label for="email">Email:</label>
@@ -17,6 +18,7 @@
             <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required>
             <button type="submit">Login</button>
         </form>
+        <p><a href="/forgot_password">Forgot Password?</a></p>
         <p>Don't have an account? <a href="/register">Register here</a></p>
     </div>
     <script>
