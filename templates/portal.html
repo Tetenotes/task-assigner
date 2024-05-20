@@ -6,10 +6,17 @@
     <title>Portal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-nav .nav-link.active {
+            color: #fff !important;
+            background-color: #495057;
+            border-radius: 0.25rem;
+        }
+    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container justify-content-center">
             <a class="navbar-brand" href="#">Portal</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,44 +25,46 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active" aria-current="page" href="#home">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Mechanic Profile</a>
+                        <a class="nav-link" href="#mechanic-profile">Mechanic Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Task List</a>
+                        <a class="nav-link" href="#task-list">Task List</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Completed Tasks</a>
+                        <a class="nav-link" href="#completed-tasks">Completed Tasks</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Statistics</a>
+                        <a class="nav-link" href="#statistics">Statistics</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Notifications</a>
+                        <a class="nav-link" href="#notifications">Notifications</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Flash Messages -->
-        <div id="flash-messages">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+    <div class="container mt-4">
+        <div id="home">
+            <!-- Flash Messages -->
+            <div id="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
         </div>
 
-        <div class="mechanic-profile">
+        <div id="mechanic-profile" class="mechanic-profile mt-5">
             <h2>Mechanic Profile Creation</h2>
             <form action="/add_mechanic" method="post" enctype="multipart/form-data">
                 <label for="first-name">First Name:</label>
@@ -78,7 +87,7 @@
             </form>
         </div>
 
-        <div class="task-list">
+        <div id="task-list" class="task-list mt-5">
             <h2>Task List</h2>
             <form action="/assign_task" method="post">
                 <label for="mechanic-id-task">Mechanic ID:</label>
@@ -126,16 +135,7 @@
             </ul>
         </div>
 
-        <div class="mechanic-profiles">
-            <h2>Mechanic Profiles</h2>
-            <ul>
-                {% for mechanic in mechanics %}
-                <li>{{ mechanic.first_name }} {{ mechanic.last_name }} - {{ mechanic.email }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-
-        <div class="completed-tasks">
+        <div id="completed-tasks" class="completed-tasks mt-5">
             <h2>Completed Tasks</h2>
             <ul>
                 {% for task in tasks %}
@@ -146,7 +146,7 @@
             </ul>
         </div>
 
-        <div class="statistics">
+        <div id="statistics" class="statistics mt-5">
             <h2>Statistics</h2>
             <table class="table table-striped">
                 <thead>
@@ -168,7 +168,7 @@
             </table>
         </div>
 
-        <div class="notifications">
+        <div id="notifications" class="notifications mt-5">
             <h2>Notifications</h2>
             <ul>
                 {% for notification in notifications %}
