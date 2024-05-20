@@ -9,6 +9,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from werkzeug.utils import secure_filename
+from itsdangerous import URLSafeTimedSerializer
 app = Flask(__name__)
 
 # Ensure the directory exists
@@ -24,6 +25,7 @@ app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static/uploads')
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # Define the database models
 class User(db.Model):
@@ -400,6 +402,46 @@ def reassign_task():
         flash('Error: Task not found.', 'danger')
 
     return redirect(url_for('portal'))
+# Forget password route
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = s.dumps(email, salt='password-reset-salt')
+            reset_url = url_for('reset_password', token=token, _external=True)
+            send_email('Password Reset Request', email, f'Click the link to reset your password: {reset_url}')
+            flash('A password reset link has been sent to your email.', 'info')
+        else:
+            flash('No account found with that email.', 'danger')
+    return render_template('forgot_password.html')
+# Reset password route
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=3600)
+    except:
+        flash('The password reset link is invalid or has expired.', 'danger')
+        return redirect(url_for('login_page'))
+
+    if request.method == 'POST':
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('reset_password', token=token))
+        
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password = password
+            db.session.commit()
+            flash('Your password has been reset successfully.', 'success')
+            return redirect(url_for('login_page'))
+        else:
+            flash('An error occurred. Please try again.', 'danger')
+            return redirect(url_for('reset_password', token=token))
+    return render_template('reset_password.html', token=token)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
