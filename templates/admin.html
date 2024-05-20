@@ -7,213 +7,214 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
-        .navbar-nav {
-            margin: 0 auto; 
+        body {
+            display: flex;
         }
-
-        .navbar-brand {
-            color: #fff; 
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #f8f9fa;
+            padding-top: 20px;
+            position: fixed;
         }
-        .portal-button {
+        .sidebar a {
             display: block;
-            width: 200px;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            text-align: center;
+            color: #000;
+            padding: 16px;
             text-decoration: none;
-            border-radius: 5px;
         }
-
-        .portal-button:hover {
-            background-color: #0056b3;
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
         }
     </style>
 </head>
 
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Admin Portal</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#mechanic-profile">Add Mechanic</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#task-list">Assign Task</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#pause-task">Pause Task</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#resume-task">Resume Task</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#reassign-task">Reassign Task</a>
-                    </li>
-                </ul>
-                <span class="navbar-text">
-                    <a href="/logout" class="btn btn-danger">Logout</a>
-                </span>
-            </div>
-        </div>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <a class="navbar-brand" href="#">Admin Portal</a>
+        <a href="#mechanic-profile">Mechanic Profile creation</a>
+        <a href="#task-list">Task Assigner</a>
+        <a href="#Assigned Tasks">Tasks assignments status</a>
+        <a href="#completed-tasks">Completed Tasks</a>
+        <a href="#statistics">Statistics</a>
+        <a href="#notifications">Notifications</a>
+        <a href="/logout" class="btn btn-danger mt-3">Logout</a>
     </nav>
 
-    <div class="container mt-4" id="mechanic-profile">
-        <h1 class="mb-4">Welcome to Admin Page</h1>
-        <h2>Mechanic Profile Creation</h2>
-        <form action="/add_mechanic" method="post" enctype="multipart/form-data" class="mb-4">
-            <div class="mb-3">
-                <label for="first-name" class="form-label">First Name:</label>
-                <input type="text" id="first-name" name="firstName" class="form-control" placeholder="First Name" required>
-            </div>
-            <div class="mb-3">
-                <label for="last-name" class="form-label">Last Name:</label>
-                <input type="text" id="last-name" name="lastName" class="form-control" placeholder="Last Name" required>
-            </div>
-            <div class="mb-3">
-                <label for="phone" class="form-label">Phone Number:</label>
-                <input type="tel" id="phone" name="phoneNumber" class="form-control" placeholder="Phone Number" required>
-            </div>
-            <div class="mb-3">
-                <label for="mechanic-id" class="form-label">Mechanic ID:</label>
-                <input type="text" id="mechanic-id" name="mechanicId" class="form-control" placeholder="Mechanic ID" required>
-            </div>
-            <div class="mb-3">
-                <label for="photo" class="form-label">Photo:</label>
-                <input type="file" id="photo" name="photo" class="form-control" accept="image/*" required>
-            </div>
-            <div class="mb-3">
-                <label for="comments" class="form-label">Comments:</label>
-                <textarea id="comments" name="comments" class="form-control" placeholder="Comments"></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email:</label>
-                <input type="email" id="email" name="email" class="form-control" placeholder="Sulthan Trans Email ID" required>
-            </div>
-            <div class="mb-3">
-                <label for="location" class="form-label">Office Location:</label>
-                <input type="text" id="location" name="location" class="form-control" placeholder="Office Location" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
+    <!-- Main Content -->
+    <div class="content">
+        <div id="mechanic-profile" class="container mt-4">
+            <h1>Welcome to Admin Page</h1>
+                <form action="/add_mechanic" method="post" enctype="multipart/form-data" class="mb-4">
+                <div class="mb-3">
+                    <label for="first-name" class="form-label">First Name:</label>
+                    <input type="text" id="first-name" name="firstName" class="form-control" placeholder="First Name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="last-name" class="form-label">Last Name:</label>
+                    <input type="text" id="last-name" name="lastName" class="form-control" placeholder="Last Name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number:</label>
+                    <input type="tel" id="phone" name="phoneNumber" class="form-control" placeholder="Phone Number" required>
+                </div>
+                <div class="mb-3">
+                    <label for="mechanic-id" class="form-label">Mechanic ID:</label>
+                    <input type="text" id="mechanic-id" name="mechanicId" class="form-control" placeholder="Mechanic ID" required>
+                </div>
+                <div class="mb-3">
+                    <label for="photo" class="form-label">Photo:</label>
+                    <input type="file" id="photo" name="photo" class="form-control" accept="image/*" required>
+                </div>
+                <div class="mb-3">
+                    <label for="comments" class="form-label">Comments:</label>
+                    <textarea id="comments" name="comments" class="form-control" placeholder="Comments"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Sulthan Trans Email ID" required>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">Office Location:</label>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="Office Location" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
 
-    <div class="container mt-4" id="task-list">
-        <h2>Task List</h2>
-        <form action="/assign_task" method="post" class="mb-4">
-            <div class="mb-3">
-                <label for="mechanic-id-task" class="form-label">Mechanic ID:</label>
-                <input type="text" id="mechanic-id-task" name="mechanicId" class="form-control" placeholder
-                ="Mechanic ID" required>
-            </div>
-            <div class="mb-3">
-                <label for="task" class="form-label">Task:</label>
-                <input type="text" id="task" name="taskDescription" class="form-control" placeholder="Task" required>
-            </div>
-            <div class="mb-3">
-                <label for="from" class="form-label">From:</label>
-                <input type="datetime-local" id="from" name="from" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label for="to" class="form-label">To:</label>
-                <input type="datetime-local" id="to" name="to" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Assign Task</button>
-        </form>
-    </div>
-    <div class="container mt-4">
-        <h2>Mechanic Profiles</h2>
-        <div class="row">
-            {% for mechanic in mechanics %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="{{ url_for('static', filename='uploads/' + os.path.basename(mechanic.photo)) }}" class="card-img-top" alt="Mechanic Photo">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ mechanic.firstName }} {{ mechanic.lastName }}</h5>
-                        <p class="card-text">Mechanic ID: {{ mechanic.mechanicId }}</p>
-                        <p class="card-text">Phone: {{ mechanic.phoneNumber }}</p>
-                        <p class="card-text">Email: {{ mechanic.email }}</p>
-                        <p class="card-text">Location: {{ mechanic.location }}</p>
-                        <p class="card-text">Comments: {{ mechanic.comments }}</p>
-                        <form action="/delete_mechanic" method="post">
-                            <input type="hidden" name="mechanicId" value="{{ mechanic.mechanicId }}">
-                            <button type="submit" class="btn btn-danger">Delete Mechanic</button>
-                        </form>
-                       
+        <div id="task-list" class="task-list mt-5">
+            <h2>Task List</h2>
+            <form action="/assign_task" method="post">
+                <label for="mechanic-id-task">Mechanic ID:</label>
+                <input type="text" id="mechanic-id-task" name="mechanicId" placeholder="Mechanic ID" required>
+                <label for="task">Task:</label>
+                <input type="text" id="task" name="taskDescription" placeholder="Task" required>
+                <label for="from">From:</label>
+                <input type="datetime-local" id="from" name="from" required>
+                <label for="to">To:</label>
+                <input type="datetime-local" id="to" name="to" required>
+                <button type="submit" class="btn btn-primary mt-3">Assign Task</button>
+            </form>
+
+            <ul>
+                {% for task in tasks %}
+                <li>
+                    Task: {{ task.task_description }} assigned to {{ task.mechanic_id }}
+                    {% if task.status == 'in progress' %}
+                        {% set elapsed_time_seconds = (datetime.utcnow() - task.start_time).total_seconds() %}
+                        <span>Elapsed Time: {{ elapsed_time_seconds }}</span>
+                    {% endif %}
+                    <br>
+                    Start Time: {{ task.start_time }} <br>
+                    End Time: {{ task.end_time }} <br>
+                    <form action="/pause_task" method="post" style="display: inline;">
+                        <input type="hidden" name="taskId" value="{{ task.id }}">
+                        <button type="submit" class="btn btn-warning btn-sm">Pause</button>
+                    </form>
+                    <form action="/delete_task" method="post" style="display: inline;">
+                        <input type="hidden" name="taskId" value="{{ task.id }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                    <form action="/resume_task" method="post" style="display: inline;">
+                        <input type="hidden" name="taskId" value="{{ task.id }}">
+                        <button type="submit" class="btn btn-success btn-sm">Resume</button>
+                    </form>
+                    <form action="/reassign_task" method="post" style="display: inline;">
+                        <input type="hidden" name="taskId" value="{{ task.id }}">
+                        <label for="mechanicId" class="form-label">Mechanic ID:</label>
+                        <input type="text" id="mechanicId" name="mechanicId" placeholder="Mechanic ID" required class="form-control form-control-sm">
+                        <button type="submit" class="btn btn-info btn-sm mt-2">Reassign</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="container mt-4">
+            <h2>Mechanic Profiles</h2>
+            <div class="row">
+                {% for mechanic in mechanics %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='uploads/' + os.path.basename(mechanic.photo)) }}" class="card-img-top" alt="Mechanic Photo">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ mechanic.firstName }} {{ mechanic.lastName }}</h5>
+                            <p class="card-text">Mechanic ID: {{ mechanic.mechanic_id }}</p>
+                            <p class="card-text">Phone: {{ mechanic.phone}}</p>
+                            <p class="card-text">Email: {{ mechanic.email }}</p>
+                            <p class="card-text">Location: {{ mechanic.location }}</p>
+                            <p class="card-text">Comments: {{ mechanic.comments }}</p>
+                            <form action="/delete_mechanic" method="post">
+                                <input type="hidden" name="mechanicId" value="{{ mechanic.mechanic_id }}">
+                                <button type="submit" class="btn btn-danger">Delete Mechanic</button>
+                            </form>
+                           
+                        </div>
                     </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
-    </div>
-    <div class="container mt-4" id="pause-task">
-        <h2>Pause Task</h2>
-        <form action="/pause_task" method="post" class="mb-4">
-            <div class="mb-3">
-                <label for="task-id-pause" class="form-label">Task ID:</label>
-                <input type="text" id="task-id-pause" name="taskId" class="form-control" placeholder="Task ID" required>
-            </div>
-            <button type="submit" class="btn btn-warning">Pause Task</button>
-        </form>
-    </div>
+        <div id="Assigned Tasks" class="container mt-4">
+            <h2>Assigned Tasks</h2>
+            <ul class="list-group">
+                {% for task in tasks %}
+                <li class="list-group-item">Task ID: {{ task.id }} - {{ task.task_description }} assigned to {{ task.mechanic_id }} - {{ task.status }}</li>
+                <form action="/delete_task" method="post">
+                    <input type="hidden" name="taskId" value="{{ task.id }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="completed-tasks" class="container mt-4">
+            <h2>Completed Tasks</h2>
+            <ul class="list-group">
+                {% for task in tasks %}
+                {% if task.status == 'completed' %}
+                <li class="list-group-item">Task ID: {{ task.id }} - {{ task.task_description }} assigned to {{ task.mechanic_id }} - {{ task.status }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
 
-    <div class="container mt-4" id="resume-task">
-        <h2>Resume Task</h2>
-        <form action="/resume_task" method="post" class="mb-4">
-            <div class="mb-3">
-                <label for="task-id-resume" class="form-label">Task ID:</label>
-                <input type="text" id="task-id-resume" name="taskId" class="form-control" placeholder="Task ID" required>
-            </div>
-            <button type="submit" class="btn btn-success">Resume Task</button>
-        </form>
-    </div>
+        <div id="statistics" class="container mt-4">
+            <h2>Statistics</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Total Tasks</th>
+                        <th>Total Completed Tasks</th>
+                        <th>Total In Progress Tasks</th>
+                        <th>Average Task Duration (minutes)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ total_tasks }}</td>
+                        <td>{{ total_completed_tasks }}</td>
+                        <td>{{ total_in_progress_tasks }}</td>
+                        <td>{{ average_task_duration }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="container mt-4" id="reassign-task">
-        <h2>Reassign Task</h2>
-        <form action="/reassign_task" method="post" class="mb-4">
-            <div class="mb-3">
-                <label for="task-id-reassign" class="form-label">Task ID:</label>
-                <input type="text" id="task-id-reassign" name="taskId" class="form-control" placeholder="Task ID" required>
-            </div>
-            <div class="mb-3">
-                <label for="mechanic-id-reassign" class="form-label">New Mechanic ID:</label>
-                <input type="text" id="mechanic-id-reassign" name="mechanicId" class="form-control" placeholder="New Mechanic ID" required>
-            </div>
-            <button type="submit" class="btn btn-info">Reassign Task</button>
-        </form>
+        <div id="notifications" class="container mt-4">
+            <h2>Notifications</h2>
+            <ul class="list-group">
+                {% for notification in notifications %}
+                <li class="list-group-item">{{ notification.message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <a href="/portal" class="btn btn-secondary mt-3">Go to Assignments tab</a>
     </div>
-
-    <div class="container mt-4">
-        <h2>Assigned Tasks</h2>
-        <ul class="list-group">
-            {% for task in tasks %}
-            <li class="list-group-item">Task ID: {{ task.id }} - {{ task.task_description }} assigned to {{ task.mechanic_id }} - {{ task.status }}</li>
-            <form action="/delete_task" method="post">
-                <input type="hidden" name="taskId" value="{{ task.id }}">
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <div class="container mt-4">
-        <h2>Notifications</h2>
-        <ul class="list-group">
-            {% for notification in notifications %}
-            <li class="list-group-item">{{ notification.message }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-
-    <a href="/portal" class="portal-button">Go to portal</a>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
