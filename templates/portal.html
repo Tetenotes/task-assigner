@@ -6,108 +6,91 @@
     <title>Portal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .navbar-nav .nav-link.active {
-            
-            border-radius: 0.25rem;
-        }
-    </style>
+
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container justify-content-center">
-            <a class="navbar-brand" href="#">Portal</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#mechanic-profile">Mechanic Profile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#task-list">Task List</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#completed-tasks">Completed Tasks</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#statistics">Statistics</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#notifications">Notifications</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+
 
     <div class="container mt-4">
         <div id="home">
             <!-- Flash Messages -->
             <div id="flash-messages">
                 {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
                 {% endwith %}
             </div>
         </div>
 
-        <div id="mechanic-profile" class="mechanic-profile mt-5">
-            <h2>Mechanic Profile Creation</h2>
-            <form action="/add_mechanic" method="post" enctype="multipart/form-data">
-                <label for="first-name">First Name:</label>
-                <input type="text" id="first-name" name="firstName" placeholder="First Name" required>
-                <label for="last-name">Last Name:</label>
-                <input type="text" id="last-name" name="lastName" placeholder="Last Name" required>
-                <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phoneNumber" placeholder="Phone Number" required>
-                <label for="mechanic-id">Mechanic ID:</label>
-                <input type="text" id="mechanic-id" name="mechanicId" placeholder="Mechanic ID" required>
-                <label for="photo">Photo:</label>
-                <input type="file" id="photo" name="photo" accept="image/*" required>
-                <label for="comments">Comments:</label>
-                <textarea id="comments" name="comments" placeholder="Comments"></textarea>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" placeholder="Sulthan Trans Email ID" required>
-                <label for="location">Office Location:</label>
-                <input type="text" id="location" name="location" placeholder="Office Location" required>
-                <button type="submit" class="btn btn-primary mt-3">Submit</button>
-            </form>
-        </div>
 
+        <div class="container mt-4">
+            <h2>Mechanic Profiles</h2>
+            <div class="row">
+                {% for mechanic in mechanics %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="{{ url_for('static', filename='uploads/' + os.path.basename(mechanic.photo)) }}"
+                            class="card-img-top" alt="Mechanic Photo">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ mechanic.firstName }} {{ mechanic.lastName }}</h5>
+                            <p class="card-text">Mechanic ID: {{ mechanic.mechanic_id }}</p>
+                            <p class="card-text">Phone: {{ mechanic.phone}}</p>
+                            <p class="card-text">Email: {{ mechanic.email }}</p>
+                            <p class="card-text">Location: {{ mechanic.location }}</p>
+                            <p class="card-text">Comments: {{ mechanic.comments }}</p>
+
+                            <!-- Assign Task Form -->
+                            <form action="/assign_task" method="post">
+                                <input type="hidden" name="mechanicId" value="{{ mechanic.mechanic_id }}">
+                                <label for="task">Task:</label>
+                                <input type="text" id="task" name="taskDescription" placeholder="Task" required>
+                                <label for="from">From:</label>
+                                <input type="datetime-local" id="from" name="from" required>
+                                <label for="to">To:</label>
+                                <input type="datetime-local" id="to" name="to" required>
+                                <button type="submit" class="btn btn-primary mt-3">Assign Task</button>
+                            </form>
+
+                            <!-- Remove Task Form -->
+                            <form action="/delete_task" method="post">
+                                <input type="hidden" name="mechanicId" value="{{ mechanic.mechanic_id }}">
+                                <label for="remove-task-id">Remove Task by ID:</label>
+                                <input type="text" id="remove-task-id" name="taskId" placeholder="Task ID" required>
+                                <button type="submit" class="btn btn-danger mt-3">Remove Task</button>
+                            </form>
+
+                            <!-- Delete Mechanic Form -->
+                            <form action="/delete_mechanic" method="post">
+                                <input type="hidden" name="mechanicId" value="{{ mechanic.mechanic_id }}">
+                                <button type="submit" class="btn btn-danger mt-2">Delete Mechanic</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
         <div id="task-list" class="task-list mt-5">
             <h2>Task List</h2>
-            <form action="/assign_task" method="post">
-                <label for="mechanic-id-task">Mechanic ID:</label>
-                <input type="text" id="mechanic-id-task" name="mechanicId" placeholder="Mechanic ID" required>
-                <label for="task">Task:</label>
-                <input type="text" id="task" name="taskDescription" placeholder="Task" required>
-                <label for="from">From:</label>
-                <input type="datetime-local" id="from" name="from" required>
-                <label for="to">To:</label>
-                <input type="datetime-local" id="to" name="to" required>
-                <button type="submit" class="btn btn-primary mt-3">Assign Task</button>
-            </form>
-
             <ul>
                 {% for task in tasks %}
                 <li>
                     Task: {{ task.task_description }} assigned to {{ task.mechanic_id }}
                     {% if task.status == 'in progress' %}
-                        {% set elapsed_time_seconds = (datetime.utcnow() - task.start_time).total_seconds() %}
-                        <span>Elapsed Time: {{ elapsed_time_seconds }}</span>
+                    {% set elapsed_time_seconds = (datetime.utcnow() - task.start_time).total_seconds() %}
+                    {% set elapsed_time_minutes = elapsed_time_seconds // 60 %}
+                    {% set remaining_seconds = elapsed_time_seconds % 60 %}
+                    <span>Elapsed Time: {{ elapsed_time_minutes }} minutes {% if remaining_seconds > 0 %} and {{
+                        remaining_seconds }} seconds{% endif %}</span>
                     {% endif %}
+
                     <br>
                     Start Time: {{ task.start_time }} <br>
                     End Time: {{ task.end_time }} <br>
@@ -126,14 +109,14 @@
                     <form action="/reassign_task" method="post" style="display: inline;">
                         <input type="hidden" name="taskId" value="{{ task.id }}">
                         <label for="mechanicId" class="form-label">Mechanic ID:</label>
-                        <input type="text" id="mechanicId" name="mechanicId" placeholder="Mechanic ID" required class="form-control form-control-sm">
+                        <input type="text" id="mechanicId" name="mechanicId" placeholder="Mechanic ID" required
+                            class="form-control form-control-sm">
                         <button type="submit" class="btn btn-info btn-sm mt-2">Reassign</button>
                     </form>
                 </li>
                 {% endfor %}
             </ul>
         </div>
-
         <div id="completed-tasks" class="completed-tasks mt-5">
             <h2>Completed Tasks</h2>
             <ul>
@@ -144,7 +127,6 @@
                 {% endfor %}
             </ul>
         </div>
-
         <div id="statistics" class="statistics mt-5">
             <h2>Statistics</h2>
             <table class="table table-striped">
@@ -188,7 +170,17 @@
                     alert.classList.remove('show');
                     alert.classList.add('hide');
                 }
-            }, 3000); 
+            }, 3000);
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('remove-task-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                var taskId = prompt("Enter the Task ID to remove:");
+                if (taskId) {
+                    document.getElementById('remove-task-id').value = taskId;
+                    this.submit();
+                }
+            });
         });
     </script>
 </body>
