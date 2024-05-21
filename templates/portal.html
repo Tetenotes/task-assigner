@@ -27,7 +27,6 @@
 
 <body>
 
-
     <div class="container mt-4">
         <div id="home">
             <!-- Flash Messages -->
@@ -48,27 +47,26 @@
         <h2>Mechanic Profiles</h2>
         <div class="mechanic-profile-table">
             <div class="mechanic-profile-row">
-                
                 <div class="mechanic-profile-cell"><strong>Mechanic ID</strong></div>
                 <div class="mechanic-profile-cell"><strong>Name</strong></div>
                 <div class="mechanic-profile-cell"><strong>Photo</strong></div>
-                <div class="mechanic-profile-cell"><strong>Phone</strong></div>
-                <div class="mechanic-profile-cell"><strong>Email</strong></div>
-                <div class="mechanic-profile-cell"><strong>Location</strong></div>
                 <div class="mechanic-profile-cell"><strong>Comments</strong></div>
+                <div class="mechanic-profile-cell"><strong>Assign Task</strong></div>
+                <div class="mechanic-profile-cell"><strong>Remove Task</strong></div>
+                <div class="mechanic-profile-cell"><strong>Update Task</strong></div>
                 <div class="mechanic-profile-cell"><strong>Actions</strong></div>
             </div>
             {% for mechanic in mechanics %}
             <div class="mechanic-profile-row">
                 <div class="mechanic-profile-cell">{{ mechanic.mechanic_id }}</div>
                 <div class="mechanic-profile-cell">{{ mechanic.first_name }} {{ mechanic.last_name }}</div>
-                <div class="mechanic-profile-cell"><img src="{{ url_for('static', filename='uploads/' + os.path.basename(mechanic.photo)) }}" alt="Mechanic Photo"></div>
-                <div class="mechanic-profile-cell">{{ mechanic.phone}}</div>
-                <div class="mechanic-profile-cell">{{ mechanic.email }}</div>
-                <div class="mechanic-profile-cell">{{ mechanic.location }}</div>
+                <div class="mechanic-profile-cell"><img
+                        src="{{ url_for('static', filename='uploads/' + os.path.basename(mechanic.photo)) }}"
+                        alt="Mechanic Photo"></div>
                 <div class="mechanic-profile-cell">{{ mechanic.comments }}</div>
+
+                <!-- Assign Task Form Column -->
                 <div class="mechanic-profile-cell">
-                    <!-- Assign Task Form -->
                     <form action="/assign_task" method="post">
                         <input type="hidden" name="mechanicId" value="{{ mechanic.mechanic_id }}">
                         <label for="task">Task:</label>
@@ -79,16 +77,51 @@
                         <input type="datetime-local" id="to" name="to" required>
                         <button type="submit" class="btn btn-primary mt-3">Assign Task</button>
                     </form>
+                </div>
 
-                    <!-- Remove Task Form -->
+                <!-- Remove Task Form Column -->
+                <div class="mechanic-profile-cell">
                     <form action="/delete_task" method="post">
                         <input type="hidden" name="mechanicId" value="{{ mechanic.mechanic_id }}">
                         <label for="remove-task-id">Remove Task by ID:</label>
                         <input type="text" id="remove-task-id" name="taskId" placeholder="Task ID" required>
                         <button type="submit" class="btn btn-danger mt-3">Remove Task</button>
                     </form>
+                </div>
 
-                    <!-- Delete Mechanic Form -->
+                <!-- Update Task Form -->
+                <form id="update-task-form" action="{{ url_for('update_task') }}" method="POST" class="needs-validation"
+                    novalidate>
+                    <div class="form-group">
+                        <label for="taskId">Task ID</label>
+                        <input type="text" class="form-control" id="taskId" name="taskId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Task Description</label>
+                        <input type="text" class="form-control" id="taskDescription" name="taskDescription" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="startTime">Start Time</label>
+                        <input type="datetime-local" class="form-control" id="startTime" name="startTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">End Time</label>
+                        <input type="datetime-local" class="form-control" id="endTime" name="endTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="in progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="paused">Paused</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">Update Task</button>
+                </form>
+
+
+                <!-- Delete Mechanic Form Column -->
+                <div class="mechanic-profile-cell">
                     <form action="/delete_mechanic" method="post">
                         <input type="hidden" name="mechanicId" value="{{ mechanic.mechanic_id }}">
                         <button type="submit" class="btn btn-danger mt-2">Delete Mechanic</button>
@@ -98,88 +131,87 @@
             {% endfor %}
         </div>
     </div>
-        <div id="task-list" class="task-list mt-5">
-            <h2>Task List</h2>
-            <ul>
-                {% for task in tasks %}
-                <li>
-                    Task: {{ task.task_description }} assigned to {{ task.mechanic_id }}
-                    {% if task.status == 'in progress' %}
-                    {% set elapsed_time_seconds = (datetime.utcnow() - task.start_time).total_seconds() %}
-                    {% set elapsed_time_minutes = elapsed_time_seconds // 60 %}
-                    {% set remaining_seconds = elapsed_time_seconds % 60 %}
-                    <span>Elapsed Time: {{ elapsed_time_minutes }} minutes {% if remaining_seconds > 0 %} and {{
-                        remaining_seconds }} seconds{% endif %}</span>
-                    {% endif %}
 
-                    <br>
-                    Start Time: {{ task.start_time }} <br>
-                    End Time: {{ task.end_time }} <br>
-                    <form action="/pause_task" method="post" style="display: inline;">
-                        <input type="hidden" name="taskId" value="{{ task.id }}">
-                        <button type="submit" class="btn btn-warning btn-sm">Pause</button>
-                    </form>
-                    <form action="/delete_task" method="post" style="display: inline;">
-                        <input type="hidden" name="taskId" value="{{ task.id }}">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                    <form action="/resume_task" method="post" style="display: inline;">
-                        <input type="hidden" name="taskId" value="{{ task.id }}">
-                        <button type="submit" class="btn btn-success btn-sm">Resume</button>
-                    </form>
-                    <form action="/reassign_task" method="post" style="display: inline;">
-                        <input type="hidden" name="taskId" value="{{ task.id }}">
-                        <label for="mechanicId" class="form-label">Mechanic ID:</label>
-                        <input type="text" id="mechanicId" name="mechanicId" placeholder="Mechanic ID" required
-                            class="form-control form-control-sm">
-                        <button type="submit" class="btn btn-info btn-sm mt-2">Reassign</button>
-                    </form>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div id="completed-tasks" class="completed-tasks mt-5">
-            <h2>Completed Tasks</h2>
-            <ul>
-                {% for task in tasks %}
-                {% if task.status == 'completed' %}
-                <li>{{ task.task_description }} assigned to {{ task.mechanic_id }}</li>
+    <div id="task-list" class="task-list mt-5">
+        <h2>Task List</h2>
+        <ul>
+            {% for task in tasks %}
+            <li>
+                Task: {{ task.task_description }} assigned to {{ task.mechanic_id }}
+                {% if task.status == 'in progress' %}
+                {% set elapsed_time_seconds = (datetime.utcnow() - task.start_time).total_seconds() %}
+                {% set elapsed_time_minutes = elapsed_time_seconds // 60 %}
+                {% set remaining_seconds = elapsed_time_seconds % 60 %}
+                <span>Elapsed Time: {{ elapsed_time_minutes }} minutes {% if remaining_seconds > 0 %} and {{
+                    remaining_seconds }} seconds{% endif %}</span>
                 {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
-        <div id="statistics" class="statistics mt-5">
-            <h2>Statistics</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Total Tasks</th>
-                        <th>Total Completed Tasks</th>
-                        <th>Total In Progress Tasks</th>
-                        <th>Average Task Duration (minutes)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{{ total_tasks }}</td>
-                        <td>{{ total_completed_tasks }}</td>
-                        <td>{{ total_in_progress_tasks }}</td>
-                        <td>{{ average_task_duration }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <br>
+                Start Time: {{ task.start_time }} <br>
+                End Time: {{ task.end_time }} <br>
+                <form action="/pause_task" method="post" style="display: inline;">
+                    <input type="hidden" name="taskId" value="{{ task.id }}">
+                    <button type="submit" class="btn btn-warning btn-sm">Pause</button>
+                </form>
+                <form action="/delete_task" method="post" style="display: inline;">
+                    <input type="hidden" name="taskId" value="{{ task.id }}">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+                <form action="/resume_task" method="post" style="display: inline;">
+                    <input type="hidden" name="taskId" value="{{ task.id }}">
+                    <button type="submit" class="btn btn-success btn-sm">Resume</button>
+                </form>
+                <form action="/reassign_task" method="post" style="display: inline;">
+                    <input type="hidden" name="taskId" value="{{ task.id }}">
+                    <label for="mechanicId" class="form-label">Mechanic ID:</label>
+                    <input type="text" id="mechanicId" name="mechanicId" placeholder="Mechanic ID" required
+                        class="form-control form-control-sm">
+                    <button type="submit" class="btn btn-info btn-sm mt-2">Reassign</button>
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
 
-        <div id="notifications" class="notifications mt-5">
-            <h2>Notifications</h2>
-            <ul>
-                {% for notification in notifications %}
-                <li>{{ notification.message }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div id="completed-tasks" class="completed-tasks mt-5">
+        <h2>Completed Tasks</h2>
+        <ul>
+            {% for task in tasks %}
+            {% if task.status == 'completed' %}
+            <li>{{ task.task_description }} assigned to {{ task.mechanic_id }}</li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
 
- 
+    <div id="statistics" class="statistics mt-5">
+        <h2>Statistics</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Total Tasks</th>
+                    <th>Total Completed Tasks</th>
+                    <th>Total In Progress Tasks</th>
+                    <th>Average Task Duration (minutes)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ total_tasks }}</td>
+                    <td>{{ total_completed_tasks }}</td>
+                    <td>{{ total_in_progress_tasks }}</td>
+                    <td>{{ average_task_duration }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="notifications" class="notifications mt-5">
+        <h2>Notifications</h2>
+        <ul>
+            {% for notification in notifications %}
+            <li>{{ notification.message }}</li>
+            {% endfor %}
+        </ul>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
