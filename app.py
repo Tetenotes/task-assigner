@@ -298,6 +298,42 @@ def assign_task():
 
     flash('Task assigned successfully!', 'success')
     return redirect(url_for('portal'))
+@app.route('/update_task', methods=['POST'])
+def update_task():
+    if 'email' not in session:
+        flash('You need to be logged in to update tasks.', 'danger')
+        return redirect(url_for('login_page'))
+
+    task_id = request.form.get('taskId')
+    task_description = request.form.get('taskDescription')
+    start_time_str = request.form.get('startTime')
+    end_time_str = request.form.get('endTime')
+    status = request.form.get('status')
+
+    task = Task.query.get(task_id)
+    if task:
+        task.task_description = task_description
+        task.start_time = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M').replace(tzinfo=utc)
+        task.end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M').replace(tzinfo=utc)
+        task.status = status
+        db.session.commit()
+
+        flash('Task updated successfully!', 'success')
+
+        # Add notification
+        notification_message = f'Task "{task.task_description}" updated'
+        notification = Notification(message=notification_message)
+        db.session.add(notification)
+        db.session.commit()
+
+        # Send email notification
+        user = User.query.filter_by(email=session['email']).first()
+        if user:
+            send_email('Task Updated', user.email, notification_message)
+    else:
+        flash('Error: Task not found.', 'danger')
+
+    return redirect(url_for('portal'))
 
 @app.route('/delete_task', methods=['POST'])
 def delete_task():
